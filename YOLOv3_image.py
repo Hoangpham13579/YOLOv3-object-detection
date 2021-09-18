@@ -84,7 +84,7 @@ def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, cla
 
 
 # Load and get image shape
-image = cv2.imread('./data/vung_tau_old_1.jpg')
+image = cv2.imread('./data/vung_tau_old.jpg')
 original_w, original_h = image.shape[1], image.shape[0]
 
 # Label objects for prediction (totally 80)
