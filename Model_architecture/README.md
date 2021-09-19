@@ -34,3 +34,7 @@ Reference: YOLOv3 paper
 ## 6. Final model YOLOv3
 - Finally, with all the ready recipes, file `Yolo_v3.py` implements the constructions of YOLOv3 model from features extraction using Darknet53 to detection layer.
 - File: `Yolo_v3.py`
+
+## More resources to explore Yolo-v3 model: 
+- Blog: https://towardsdatascience.com/yolo-v3-object-detection-53fb7d3bfe6b
+- Paper: [YOLOv3 paper](https://arxiv.org/pdf/1804.02767.pdf)
