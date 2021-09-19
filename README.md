@@ -41,7 +41,7 @@ This code is implemented based on the concept of paper Yolo-v3 (You Only Look On
 - Use `YOLOv3_camera.py` to detect objects on your camera (Push "q" to quit)
 
 ## Result
-![](https://github.com/HarryPham0123/YOLOv3-object-detection/blob/main/data/YOLOv3_result.mp4)
+![](https://github.com/HarryPham0123/YOLOv3-object-detection/blob/main/data/YOLOv3_result.gif)
 
 ## Reference/Credits (Special thanks to)
 - YOLOv3: An Incremental Improvement (2018) _ [Paper](https://arxiv.org/pdf/1804.02767.pdf)
