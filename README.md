@@ -1,5 +1,5 @@
 # Yolo-v3 object detection 
-- This code is implemented based on the concept of paper Yolo-v3 (You Only Look Once_version 3). Yolo-v3 is a real-time object detection algorithm that identifies specific objects in videos, images or in realtime. It is known to be an incredibly performance, state-of-the-art model architecture: fast, accurate, and reliable.
+- This code is implemented based on the concept of paper Yolo-v3 (You Only Look Once_version 3). Yolo-v3 is a real-time object detection algorithm that identifies specific objects in videos, images or in realtime. It is known to be an incredibly performance, state-of-the-art model architecture: fast, accurate, and reliable. This model is trained on [COCO dataset](https://cocodataset.org/#home) to detect 80 different objects totally and it requires huge amount of computations for training. Therefore, I'll utilize [pre-trained model Yolo-v3](https://pjreddie.com/darknet/yolo/) trained by YOLOv3's paper author with the help of Opencv library to detect objects on image, on video and on the lap's camera
 
 ## To-do list
 - [x] Yolo-v3 architecture
@@ -36,3 +36,14 @@
 
 ## How to Use
 - If you want to understand more about the architecture of model including their implementations by using tensorflow, explore folder `Model_architecture` 
+- Use `YOLOv3_image.py` to detect objects on an image. You can detect on your own image by adding your pic into `data` folder & apply your image "cv2.imread(./data/your-image.jpg)" (Note that function is design for .jpg file only)
+- Use `YOLOv3_video.py` to detect objects on a video. Use the same instruction above to apply your own video (Push "q" to quit)
+- Use `YOLOv3_camera.py` to detect objects on your camera (Push "q" to quit)
+
+## Result
+
+## Reference/Credits (Special thanks to)
+- YOLOv3: An Incremental Improvement (2018) _ [Paper](https://arxiv.org/pdf/1804.02767.pdf)
+- Deep learning Specialization on Coursera _ taught by Andrew Ng [link](https://www.coursera.org/specializations/deep-learning)
+- Pre-trained model trained by YOLOv3's paper author _ https://pjreddie.com/darknet/yolo/
+- The implementation was also inspired a lot by [Yolov3 github of Paweł Kapica](https://github.com/mystic123/tensorflow-yolo-v3)
