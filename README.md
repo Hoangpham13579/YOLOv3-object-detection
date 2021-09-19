@@ -1,5 +1,5 @@
 # Yolo-v3 object detection 
-- This code is implemented based on the concept of paper Yolo-v3 (You Only Look Once_version 3). Yolo-v3 is a real-time object detection algorithm that identifies specific objects in videos, images or in realtime. It is known to be an incredibly performance, state-of-the-art model architecture: fast, accurate, and reliable. This model is trained on [COCO dataset](https://cocodataset.org/#home) to detect 80 different objects totally and it requires huge amount of computations for training. Therefore, I'll utilize [pre-trained model Yolo-v3](https://pjreddie.com/darknet/yolo/) trained by YOLOv3's paper author with the help of Opencv library to detect objects on image, on video and on the lap's camera
+This code is implemented based on the concept of paper Yolo-v3 (You Only Look Once_version 3). Yolo-v3 is a real-time object detection algorithm that identifies specific objects in videos, images or in realtime. It is known to be an incredibly performance, state-of-the-art model architecture: fast, accurate, and reliable. This model is trained on [COCO dataset](https://cocodataset.org/#home) to detect 80 different objects totally and it requires huge amount of computations for training. Therefore, I'll utilize [pre-trained model Yolo-v3](https://pjreddie.com/darknet/yolo/) trained by YOLOv3's paper author with the help of Opencv library to detect objects on image, on video and on the lap's camera
 
 ## To-do list
 - [x] Yolo-v3 architecture
@@ -41,6 +41,7 @@
 - Use `YOLOv3_camera.py` to detect objects on your camera (Push "q" to quit)
 
 ## Result
+![](https://github.com/HarryPham0123/YOLOv3-object-detection/blob/main/data/YOLOv3_result.mp4)
 
 ## Reference/Credits (Special thanks to)
 - YOLOv3: An Incremental Improvement (2018) _ [Paper](https://arxiv.org/pdf/1804.02767.pdf)
