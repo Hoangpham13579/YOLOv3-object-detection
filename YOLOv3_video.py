@@ -96,7 +96,7 @@ neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 # VIDEO PROCESSING
-video_capture = cv2.VideoCapture('data/yolo_test.mp4')
+video_capture = cv2.VideoCapture('./data/yolo_test.mp4')
 
 while video_capture.isOpened():
     # Read each frame of video
