@@ -94,7 +94,7 @@ with open('./data/coco.names') as f:
 colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
 
 # Read the configuration file & initialize the weight of yolov3 model (By OpenCV built-in function)
-neural_network = cv2.dnn.readNetFromDarknet('cfg/yolov3.cfg', 'models/yolov3.weights')
+neural_network = cv2.dnn.readNetFromDarknet('models/yolov3.cfg', 'models/yolov3.weights')
 
 # define whether we run the algorithm with CPU or with GPU
 # WE ARE GOING TO USE CPU !!!
