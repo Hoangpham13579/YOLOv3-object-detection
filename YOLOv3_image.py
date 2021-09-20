@@ -84,11 +84,11 @@ def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, cla
 
 
 # Load and get image shape
-image = cv2.imread('./models/vung_tau_old.jpg')
+image = cv2.imread('./data/vung_tau_old.jpg')
 original_w, original_h = image.shape[1], image.shape[0]
 
 # Label objects for prediction (totally 80)
-with open('./data/coco.names') as f:
+with open('./models/coco.names') as f:
     labels = list(line.strip() for line in f)
 # Setting colors for each label
 colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
