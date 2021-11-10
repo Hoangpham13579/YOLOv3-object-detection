@@ -36,9 +36,12 @@ This code is implemented based on the concept of paper Yolo-v3 (You Only Look On
 
 ## How to Use
 - If you want to understand more about the architecture of model including their implementations by using tensorflow, explore folder `Model_architecture` 
-- Use `YOLOv3_image.py` to detect objects on an image. You can detect on your own image by adding your pic into `data` folder & apply your image "cv2.imread(./data/your-image.jpg)" (Note that function is design for .jpg file only)
-- Use `YOLOv3_video.py` to detect objects on a video. Use the same instruction above to apply your own video (Push "q" to quit)
-- Use `YOLOv3_camera.py` to detect objects on your camera (Push "q" to quit)
+- Command below is used to apply YOLOv3 model to detect objects on the image. You can add an image to folder "data", and modify the path to apply on your own image
+`python YOLOv3_image.py --image_path ./data/vung_tau.jpg`
+- We can use `YOLOv3_video.py` to detect objects on a video. Use the same instruction above to apply your own video (Push "q" to quit)
+`python YOLOv3_video.py --video_path ./data/yolo_test.mp4`
+- We can also use `YOLOv3_camera.py` to detect objects on your camera (Push "q" to quit)
+`python YOLOv3_camera.py`
 
 ## Result
 ![](https://github.com/HarryPham0123/YOLOv3-object-detection/blob/main/data/YOLOv3_result.gif)
