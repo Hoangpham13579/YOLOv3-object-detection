@@ -35,7 +35,7 @@ This code is implemented based on the concept of paper Yolo-v3 (You Only Look On
 ```
 
 ## How to Use
-- If you want to understand more about the architecture of model including their implementations by using tensorflow, explore folder `Model_architecture` 
+If you want to understand more about the architecture of model including their implementations by using tensorflow, explore folder `Model_architecture` 
 - Command below is used to apply YOLOv3 model to detect objects on the image. You can add an image to folder "data", and modify the path to apply on your own image
 
 `python YOLOv3_image.py --image_path ./data/vung_tau.jpg`
