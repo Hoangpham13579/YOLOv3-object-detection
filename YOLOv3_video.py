@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import argparse
 
 
 # we are not going to bother with objects less than 30% probability
@@ -7,6 +8,9 @@ THRESHOLD = 0.3
 # the lower the value: the fewer bounding boxes will remain
 SUPPRESSION_THRESHOLD = 0.3
 YOLO_IMAGE_SIZE = 320
+DATA_FOLDER = './data/'
+CFG_FOLDER = './cfg/'
+MODEL_FOLDER = './models/'
 
 
 def find_objects(model_outputs):
@@ -48,7 +52,7 @@ def find_objects(model_outputs):
 
 
 def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, class_ids,
-                         confidence_values, width_ratio, height_ratio):
+                         confidence_values, width_ratio, height_ratio, colors):
     """
         Drawing the bounding boxes on the original images
         Args:
@@ -81,52 +85,70 @@ def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, cla
         cv2.putText(img, text_box, (x, y - 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, color_box_current, 1)
 
 
-# Label objects for prediction (totally 80)
-with open('./models/coco.names') as f:
-    labels = list(line.strip() for line in f)
-# Setting colors for each label
-colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
+def parse_opt(known=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--video_path', type=str, default='', help='initial image path')
+    parser.add_argument('--class_path', type=str, default=DATA_FOLDER+'coco.names', help='initial class file path')
+    parser.add_argument('--cfg_path', type=str, default=CFG_FOLDER+'yolov3.cfg', help='initial cfg file path')
+    parser.add_argument('--weights_path', type=str, default=MODEL_FOLDER+'yolov3.weights', help='initial '
+                                                                                                  'pre-trained '
+                                                                                                  'weights file path')
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
 
-# Read the configuration file & initialize the weight of yolov3 model
-neural_network = cv2.dnn.readNetFromDarknet('./models/yolov3.cfg', './models/yolov3.weights')
 
-# define whether we run the algorithm with CPU or with GPU
-# WE ARE GOING TO USE CPU !!!
-neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+def main(opt):
+    # Label objects for prediction (totally 80)
+    with open(opt.class_path) as f:
+        labels = list(line.strip() for line in f)
+    # Setting colors for each label
+    colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
 
-# VIDEO PROCESSING
-video_capture = cv2.VideoCapture('./data/yolo_test.mp4')
+    # Read the configuration file & initialize the weight of yolov3 model
+    neural_network = cv2.dnn.readNetFromDarknet(opt.cfg_path, opt.weights_path)
 
-while video_capture.isOpened():
-    # Read each frame of video
-    is_grab, frame = video_capture.read()
-    original_width, original_height = frame.shape[1], frame.shape[0]
+    # define whether we run the algorithm with CPU or with GPU
+    # WE ARE GOING TO USE CPU !!!
+    neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+    neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
-    # Preprocess frame before inputting into model
-    blob = cv2.dnn.blobFromImage(frame, 1 / 255, (YOLO_IMAGE_SIZE, YOLO_IMAGE_SIZE), True, crop=False)
-    neural_network.setInput(blob)
+    # VIDEO PROCESSING
+    video_capture = cv2.VideoCapture(opt.video_path)
 
-    # Taking the last 3 layers from pretrained models for processing the image
-    layer_names = neural_network.getLayerNames()
-    output_names = [layer_names[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
+    while video_capture.isOpened():
+        # Read each frame of video
+        is_grab, frame = video_capture.read()
+        original_width, original_height = frame.shape[1], frame.shape[0]
 
-    # Apply "Forward propagation" with input for last 3 layers
-    outputs = neural_network.forward(output_names)
+        # Preprocess frame before inputting into model
+        blob = cv2.dnn.blobFromImage(frame, 1 / 255, (YOLO_IMAGE_SIZE, YOLO_IMAGE_SIZE), True, crop=False)
+        neural_network.setInput(blob)
 
-    # Extract values from prediction vector
-    predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs)
-    # Show bounding boxes on the original image
-    show_detected_images(frame, predicted_objects_idx, bbox_locations, labels, class_label_ids, conf_values,
-                         original_width / YOLO_IMAGE_SIZE, original_height / YOLO_IMAGE_SIZE)
+        # Taking the last 3 layers from pretrained models for processing the image
+        layer_names = neural_network.getLayerNames()
+        output_names = [layer_names[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
 
-    cv2.imshow('YOLO Algorithm', frame)
+        # Apply "Forward propagation" with input for last 3 layers
+        outputs = neural_network.forward(output_names)
 
-    # Press "ESC" to quit the video
-    key = cv2.waitKey(1) & 0xff
-    if (key == 27) | (not is_grab):  # 27 represents key "ESC"
-        break
+        # Extract values from prediction vector
+        predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs)
+        # Show bounding boxes on the original image
+        show_detected_images(frame, predicted_objects_idx, bbox_locations, labels, class_label_ids, conf_values,
+                             original_width / YOLO_IMAGE_SIZE, original_height / YOLO_IMAGE_SIZE, colors)
 
-# Destroy & Release the camera
-video_capture.release()
-cv2.destroyAllWindows()
+        cv2.imshow('YOLO Algorithm', frame)
+
+        # Press "ESC" to quit the video
+        key = cv2.waitKey(1) & 0xff
+        if (key == 27) | (not is_grab):  # 27 represents key "ESC"
+            break
+
+    # Destroy & Release the camera
+    video_capture.release()
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    opt = parse_opt()
+    main(opt)

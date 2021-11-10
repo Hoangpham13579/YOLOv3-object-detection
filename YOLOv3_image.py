@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import argparse
 
 
 # we are not going to bother with objects less than 30% probability
@@ -7,6 +8,9 @@ THRESHOLD = 0.3
 # the lower the value: the fewer bounding boxes will remain
 SUPPRESSION_THRESHOLD = 0.3
 YOLO_IMAGE_SIZE = 320
+DATA_FOLDER = './data/'
+CFG_FOLDER = './cfg/'
+MODEL_FOLDER = './models/'
 
 
 def find_objects(model_outputs):
@@ -49,7 +53,7 @@ def find_objects(model_outputs):
 
 
 def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, classes_ids,
-                         confidence_values, width_ratio, height_ratio):
+                         confidence_values, width_ratio, height_ratio, colors):
     """
         Drawing the bounding boxes on the original images
         Args:
@@ -83,53 +87,67 @@ def show_detected_images(img, bounding_box_ids, all_bounding_boxes, classes, cla
         cv2.putText(img, text_box, (x, y-10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.5, color_box_current, 1)
 
 
-# Load and get image shape
-image = cv2.imread('./data/vung_tau_old.jpg')
-original_w, original_h = image.shape[1], image.shape[0]
+def parse_opt(known=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--image_path', type=str, default='', help='initial image path')
+    parser.add_argument('--class_path', type=str, default=DATA_FOLDER+'coco.names', help='initial class file path')
+    parser.add_argument('--cfg_path', type=str, default=CFG_FOLDER+'yolov3.cfg', help='initial cfg file path')
+    parser.add_argument('--weights_path', type=str, default=MODEL_FOLDER+'yolov3.weights', help='initial '
+                                                                                                  'pre-trained '
+                                                                                                  'weights file path')
+    opt = parser.parse_known_args()[0] if known else parser.parse_args()
+    return opt
 
-# Label objects for prediction (totally 80)
-with open('./models/coco.names') as f:
-    labels = list(line.strip() for line in f)
-# Setting colors for each label
-colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
 
-# Read the configuration file & initialize the weight of yolov3 model (By OpenCV built-in function)
-neural_network = cv2.dnn.readNetFromDarknet('./models/yolov3.cfg', './models/yolov3.weights')
+def main(opt):
+    # Load and get image shape
+    image = cv2.imread(opt.image_path)
+    original_w, original_h = image.shape[1], image.shape[0]
 
-# define whether we run the algorithm with CPU or with GPU
-# WE ARE GOING TO USE CPU !!!
-neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+    # Label objects for prediction (totally 80)
+    with open(opt.class_path) as f:
+        labels = list(line.strip() for line in f)
+    # Setting colors for each label
+    colors = np.random.randint(0, 255, size=(len(labels), 3), dtype='uint8')
 
-# # In case set up backend for GPU
-# neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-# neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+    # Read the configuration file & initialize the weight of yolov3 model (By OpenCV built-in function)
+    neural_network = cv2.dnn.readNetFromDarknet(opt.cfg_path, opt.weights_path)
 
-# (NOTE) YOLOv3 model requires BLOB images as the input
-# Para explanation:
-    # "1/255": for normalization
-    # "True" means transform RGB to BGR (B.c cv2 only BGR as input)
-# Transform from RGB to BLOB input image
-blob = cv2.dnn.blobFromImage(image, 1/255, (YOLO_IMAGE_SIZE, YOLO_IMAGE_SIZE), True, crop=False)
-neural_network.setInput(blob)  # Set up BLOB image as the input of the model
+    # define whether we run the algorithm with CPU or with GPU
+    # WE ARE GOING TO USE CPU !!!
+    neural_network.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+    neural_network.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
-# Get all the layer's names from model YOLOv3
-layers = neural_network.getLayerNames()
-# Getting only output layers' names that we need from YOLO v3 algorithm
-output_names = \
-    [layers[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
+    # (NOTE) YOLOv3 model requires BLOB images as the input
+    # Para explanation:
+        # "1/255": for normalization
+        # "True" means transform RGB to BGR (B.c cv2 only BGR as input)
+    # Transform from RGB to BLOB input image
+    blob = cv2.dnn.blobFromImage(image, 1/255, (YOLO_IMAGE_SIZE, YOLO_IMAGE_SIZE), True, crop=False)
+    neural_network.setInput(blob)  # Set up BLOB image as the input of the model
 
-# Apply "Forward propagation" & it results the set of bounding boxes & prediction vector
-outputs = neural_network.forward(output_names)
-# Output[0].shape: 300 means 300 bounding boxes totally & 85 are prediction vectors
-# "85" means 1st 5 parameters (x, y, w, h, conf) + 80 output classes (COCO dataset)
+    # Get all the layer's names from model YOLOv3
+    layers = neural_network.getLayerNames()
+    # Getting only output layers' names that we need from YOLO v3 algorithm
+    output_names = \
+        [layers[idx[0] - 1] for idx in neural_network.getUnconnectedOutLayers()]
 
-# Extract values from prediction vector
-predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs)
+    # Apply "Forward propagation" & it results the set of bounding boxes & prediction vector
+    outputs = neural_network.forward(output_names)
+    # Output[0].shape: 300 means 300 bounding boxes totally & 85 are prediction vectors
+    # "85" means 1st 5 parameters (x, y, w, h, conf) + 80 output classes (COCO dataset)
 
-# Draw bounding boxes on original image
-show_detected_images(image, predicted_objects_idx, bbox_locations, labels, class_label_ids, conf_values,
-                     original_w / YOLO_IMAGE_SIZE, original_h / YOLO_IMAGE_SIZE)
+    # Extract values from prediction vector
+    predicted_objects_idx, bbox_locations, class_label_ids, conf_values = find_objects(outputs)
 
-cv2.imshow('YOLO Algorithm', image)
-cv2.waitKey()
+    # Draw bounding boxes on original image
+    show_detected_images(image, predicted_objects_idx, bbox_locations, labels, class_label_ids, conf_values,
+                         original_w / YOLO_IMAGE_SIZE, original_h / YOLO_IMAGE_SIZE, colors)
+
+    cv2.imshow('YOLO Algorithm', image)
+    cv2.waitKey()
+
+
+if __name__ == "__main__":
+    opt = parse_opt()
+    main(opt)
