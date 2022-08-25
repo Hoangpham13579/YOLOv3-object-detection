@@ -47,7 +47,7 @@ If you want to understand more about the architecture of model including their i
 `python YOLOv3_camera.py`
 
 ## Result
-![](https://github.com/HarryPham0123/YOLOv3-object-detection/blob/main/data/YOLOv3_result.gif)
+![]()
 
 ## Reference/Credits (Special thanks to)
 - YOLOv3: An Incremental Improvement (2018) _ [Paper](https://arxiv.org/pdf/1804.02767.pdf)
